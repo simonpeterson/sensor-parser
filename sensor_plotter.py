@@ -10,7 +10,7 @@ class Sensordata:
 		self.identifier = identifier
 		self.highdata = highdata
 		self.lowdata = lowdata
-		self.altitude = [float(x[5]) for x in highdata]
+		self.altitude = [float(x[5]) for x in highdata[:len(lowdata)]]
 		self.lowLPO = [int(x[0]) for x in lowdata]
 		self.highLPO = [int(x[0]) for x in highdata]
 	def maxaltitudelocation(self):
@@ -48,18 +48,30 @@ print(sensors[0].keys())
 sensordata = []
 for i in sensors.keys():
 	sensordata.append(Sensordata(i, sensors[i]["high"], sensors[i]["low"]))
-	plt.figure(i)
+	plt.figure("high sensor %d"%(i))
 	plt.subplot(211)
-	plt.title("high sensor ascent")
+	plt.title("sensor %d ascent, large particles"% (i))
 	plt.plot(sensordata[i].altitude[:sensordata[i].maxaltitudelocation()], sensordata[i].highLPO[:sensordata[i].maxaltitudelocation()], 'ro')
 	plt.ylabel("LPO")
 	plt.xlabel("altitude (feet)")
 	plt.subplot(212)
-	plt.title("high sensor descent")
+	plt.title("sensor %d descent, large particles" % (i))
+	plt.plot(sensordata[i].altitude[sensordata[i].maxaltitudelocation():], sensordata[i].highLPO[sensordata[i].maxaltitudelocation():len(sensordata[i].altitude)], 'ro')
 	plt.ylabel("LPO")
 	plt.xlabel("altitude (feet)")
 	plt.tight_layout()
-	plt.plot(sensordata[i].altitude[sensordata[i].maxaltitudelocation():], sensordata[i].highLPO[sensordata[i].maxaltitudelocation():], 'ro')
+	plt.figure("low sensor %d"%(i))
+	plt.subplot(211)
+	plt.plot(sensordata[i].altitude[:sensordata[i].maxaltitudelocation()], sensordata[i].lowLPO[:sensordata[i].maxaltitudelocation()], 'ro')
+	plt.title("sensor %d ascent, small particles" %(i))
+	plt.ylabel("LPO")
+	plt.xlabel("altitude (feet)")
+	plt.subplot(212)
+	plt.plot(sensordata[i].altitude[sensordata[i].maxaltitudelocation():], sensordata[i].lowLPO[sensordata[i].maxaltitudelocation():len(sensordata[i].altitude)], 'ro')
+	plt.ylabel("LPO")
+	plt.xlabel("altitude (feet)")
+	plt.title("sensor %d descent, small particles" %(i))
+	plt.tight_layout()
 plt.show()
 
 '''
