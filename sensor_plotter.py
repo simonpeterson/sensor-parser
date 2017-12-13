@@ -13,6 +13,14 @@ class Sensordata:
 		self.altitude = [float(x[5]) for x in highdata]
 		self.lowLPO = [int(x[0]) for x in lowdata]
 		self.highLPO = [int(x[0]) for x in highdata]
+	def maxaltitudelocation(self):
+		prevalt = -1
+		maxalt = 0
+		for i in range(len(self.altitude)):
+			if(self.altitude[i] > prevalt):
+				prevalt = self.altitude[i]
+				maxalt = i
+		return maxalt
 writer = open("thanksgivingdust.csv")
 #the first line of .csv is always going to be a "sep", so we don't care
 titel = writer.readline()
@@ -42,9 +50,16 @@ for i in sensors.keys():
 	sensordata.append(Sensordata(i, sensors[i]["high"], sensors[i]["low"]))
 	plt.figure(i)
 	plt.subplot(211)
-	plt.plot(sensordata[i].altitude, sensordata[i].highLPO, 'ro')
+	plt.title("high sensor ascent")
+	plt.plot(sensordata[i].altitude[:sensordata[i].maxaltitudelocation()], sensordata[i].highLPO[:sensordata[i].maxaltitudelocation()], 'ro')
+	plt.ylabel("LPO")
+	plt.xlabel("altitude (feet)")
 	plt.subplot(212)
-	plt.plot(sensordata[i].altitude[:len(sensordata[i].lowLPO)], sensordata[i].lowLPO, 'ro')
+	plt.title("high sensor descent")
+	plt.ylabel("LPO")
+	plt.xlabel("altitude (feet)")
+	plt.tight_layout()
+	plt.plot(sensordata[i].altitude[sensordata[i].maxaltitudelocation():], sensordata[i].highLPO[sensordata[i].maxaltitudelocation():], 'ro')
 plt.show()
 
 '''
